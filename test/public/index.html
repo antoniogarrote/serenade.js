@@ -1,0 +1,280 @@
+<html>
+  <head>
+    <title>serenade.js demo</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">    
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.8.0.min.js"></script>
+    <script type="text/javascript" src="js/Audiolet.js"></script>
+    <script type="text/javascript" src="js/ko.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript">
+       jQuery(document).ready(function() {
+           var viewModel = {
+	       section: ko.observable('midi'),
+	       playingStatus: ko.observable(''),
+	       midiPlayer: ko.observable(null)
+           }
+	   viewModel.play = function() {
+	       var melodyInst = jQuery("#melody-instrument").text();
+	       var bassInst = jQuery("#bass-instrument").text();
+	       var melodyNotes = jQuery("#melody-notes").text();
+	       var bassNotes = jQuery("#bass-notes").text();
+	       var player = jQuery("#midi").text();
+	       console.log(melodyInst+"\n"+bassInst+"\n"+melodyNotes+"\n"+bassNotes+"\n"+player);
+	       viewModel.playingStatus('');
+	       viewModel.section('playing');
+
+	       eval("viewModel.midiPlayer((function(){\n"+ melodyInst+"\n"+bassInst+"\n"+melodyNotes+"\n"+bassNotes+"\n"+player+"; return midi; })())");
+	   };
+	   viewModel.stop = function() {
+	       viewModel.midiPlayer().stop();
+	       viewModel.section('midi');
+	   };
+
+	   window.viewModel = viewModel;       
+	   window.updateState =function(track,notation){
+	       var text = viewModel.playingStatus(), next;
+	       if(notation.constructor === serenade.Note) {
+		   next="\n"+track+": PLAYING "+notation.verbose()+" -> "+notation.freq()+":"+notation.dur;
+	       } else if(notation.constructor === serenade.Chord) {
+		   next="\n"+track+": PLAYING "+notation.verbose()+" -> "+notation.dur;
+	       } else {
+		   next="\n"+track+": PLAYING "+notation.verbose();
+	       }
+	       console.log(next);
+	       viewModel.playingStatus(next+text);
+	   };
+
+	   ko.applyBindings(viewModel);
+       });
+    </script>
+  </head>
+  <body>
+    <div class="container">
+
+      <div class="row" style="margin-top:20px; margin-bottom:30px">
+	<div class="span10">
+	  <h1>serenade.js demo</h1>
+	</div>
+	<div class="span2">
+	  <a class="btn btn-success btn-primary btn-large" data-bind="click:play,visible:section()!=='playing'">Play</a>
+	  <a class="btn btn-danger btn-primary btn-large" data-bind="click:stop,visible:section()==='playing'">Stop</a>
+	</div>
+      </div>
+
+
+      <div class="row" style="margin-top:20px; margin-bottom:30px" data-bind="visible:section()==='playing'">
+	<div class="span12">
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" style="width: 640px; height:500px" data-bind="value:playingStatus">
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+	</div>
+      </div>
+
+<span data-bind="visible:section()!=='playing'">
+      <ul class="nav nav-tabs">
+        <li class="active" data-bind="css:{active: section()==='midi'}, click:function(){ viewModel.section('midi') }">
+          <a href="#">Player</a>
+        </li>
+        <li data-bind="css:{active: section()==='notes-melody'}, click:function(){ viewModel.section('notes-melody') }">
+          <a href="#">Melody notes</a>
+        </li>
+        <li data-bind="css:{active: section()==='notes-bass'}, click:function(){ viewModel.section('notes-bass') }">
+	  <a href="#">Bass notes</a>
+	</li>
+        <li data-bind="css:{active: section()==='instrument-melody'}, click:function(){ viewModel.section('instrument-melody') }">
+	  <a href="#">Melody instrument</a>
+	</li>
+        <li data-bind="css:{active: section()==='instrument-bass'}, click:function(){ viewModel.section('instrument-bass') }">
+	  <a href="#">Bass instrument</a>
+	</li>
+      </ul>
+
+      <div class="row" data-bind="visible:section()==='midi'">
+	<div class="span12">
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" id="midi" style="width:640px; height:300px">		  
+var bpm = 90;
+var tempoUnit = 1/4;
+var midi = new serenade.Midi(bpm,tempoUnit);
+
+// The Legend of Zelda by Koji Kondo
+midi.seq_notes('melody', new serenade.NoteSeq(notes), serenade.Synth, attackMelody, releaseMelody);
+midi.seq_notes('bass', new serenade.NoteSeq(bassNotes), serenade.Bass, attackBass, releaseBass);
+
+midi.play(window.updateState);
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+	</div>
+
+      </div>
+
+      <div class="row" data-bind="visible:section()==='notes-melody'">
+	<div class="span12">
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" id="melody-notes" style="width: 640px; height:500px">
+       var notes = "";
+
+       // bar 1
+       notes += "Bb2 R16 Bb16 Bb.16 Bb.16 Bb16 |";
+       // bar 2
+       notes += "Bb.8 Ab16 Bb.4 Bb16 Bb.16 Bb.16 Bb16 |";
+       // bar 3
+       notes += "Bb.8 Ab16 Bb.4 R16 Bb16 Bb.16 Bb.16 Bb16 |";
+       // bar 4
+       notes += "Bb8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F8 |";
+       // bar 5
+       notes += "Bb4 F.4 Bb16 Bb16 C''16 D''16 Eb''16 |";
+       // bar 6
+       notes += "F''2 R8 F''8 F.''16 Gb.''16 Ab''16 |";
+       // bar 7
+       notes += "Bb.''2 Bb.''16 Bb''16 Bb.''16 Ab.''16 Gb''16 |";
+       // bar 8
+       notes += "Ab.''8 Gb''16 F''2 F''4 |";
+       // bar 9
+       notes += "Eb''8 Eb''16 F''16 Gb''2 F''8 Eb''8 |";
+       // bar 10
+       notes += "Db''8 Db''16 Eb''16 F''2 Eb''8 Db''8 |";
+       // bar 11
+       notes += "C''8 C''16 D''16 E''2 G''4 |";
+       // bar 12
+       notes += "F''8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F8 |";
+       // bar 13
+       notes += "Bb4 F.4 R16 Bb16 Bb16 C''16 D''16 Eb''16 |";
+       // bar 14
+       notes += "F''2  R8 F''8 F.''16 Gb.''16 Ab''16 |";
+       // bar 15
+       notes += "Bb''2 Db'''4 |";
+       // bar 16
+       notes += "C'''4 A''2 F''4 |";
+       // bar 17
+       notes += "Gb''2 R4 B''4 |";
+       // bar 18
+       notes += "A''4 F''2 F''4 |";
+       // bar 19
+       notes += "Gb''2 R4 B''4 |";
+       // bar 20
+       notes += "A''4 F''2 D''4 |";
+       // bar 21
+       notes += "Eb''2 R4 Gb''4 |";
+       // bar 22
+       notes += "F''4 Db''2 Bb4 |";
+       // bar 23
+       notes += "C''8 C''16 D''16 E''2 G''4 |";
+       // bar 24
+       notes += "F''8 F16 F16 F8 F16 F16 F8 F16 F16 F8 F8";
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+	</div>
+    </div>
+
+    <div class="row" data-bind="visible:section()==='notes-bass'">
+       <div class="span12" >
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" id="bass-notes" style="width: 640px; height:500px">
+       var bassNotes = "";
+
+       // bar 1
+       bassNotes += "Bb,4 Bb.,16 Bb.,16 Bb,16 Bb,4 Bb,16 Bb,16 Bb,16 |";
+       // bar 2
+       bassNotes += "Ab,4 Ab.,16 Ab.,16 Ab,16 Ab,4 Ab.,16 Ab.,16 Ab,16 |";
+       // bar 3
+       bassNotes += "Gb,4 Gb.,16 Gb.,16 Gb,16 Gb,4 Gb.,16 Gb.,16 Gb,16 |";
+       // bar 4
+       bassNotes += "Gb,4 F,4 F,4 G,8 A,8 |";
+       // bar 5
+       bassNotes += "Bb,4 Bb.,16 Bb.,16 Ab,16 Bb4 Bb4 |";
+       // bar 6
+       bassNotes += "Ab,4 Ab.,16 Ab.,16 Gb,16 Ab,4 Ab,4 |";
+       // bar 7
+       bassNotes += "Gb,4 Gb.,16 Gb.,16 E,16 Gb,4 Gb,4 |";
+       // bar 8
+       bassNotes += "Db4 Db.16 Db.16 B,16 Db4 Db4 |";
+       // bar 9
+       bassNotes += "B,4 B.,16 B.,16 Bb,16 B,4 B.,16 B.,16 B,16 |";
+       // bar 10
+       bassNotes += "Bb,4 Bb.,16 Bb.,16 Ab,16 Bb,4 Bb.,16 Bb.,16 Bb,16 |";
+       // bar 11
+       bassNotes += "C4 C.16 C.16 Bb,16 C4 C.16 C.16 C16 |";
+       // bar 13
+       bassNotes += "F,4 F,4 F,4 G,8 A,8 |";
+       // bar 14
+       bassNotes += "Bb,4 Bb.,16 Bb.,16 Ab,16 Bb,4 Bb,4 |";
+       // bar 15
+       bassNotes += "Ab,4 Ab.,16 Ab.,16 Gb,16 Ab,4 Ab,4 |";
+       // bar 16
+       bassNotes += "Gb,4 Gb.,16 Gb.,16 E,16 Gb,4 Gb,4 |";
+       // bar 17
+       bassNotes += "F,4 F.,16 F.,16 Eb,16 F,4 F,4 |";
+       // bar 18
+       bassNotes += "E.,16 Bb.,16 Db'16 Eb.'16 B.'16 D''16 E''4 R4 |";
+       // bar 19
+       bassNotes += "F''4 F.,16 F.,16 F,16 F,4 R4 |";
+       // bar 20
+       bassNotes += "E.,16 Bb.,16 D'16 Eb.'16 B.'16  D''16 E''4 R4 |";
+       // bar 21
+       bassNotes += "F''4 F.,16 F.,16 F,16 F,4 R4 |";
+       // bar 22
+       bassNotes += "B,4 B.,16 B.,16 Bb,16 B,4 B.,16 B.,16 B,16 |";
+       // bar 23
+       bassNotes += "Bb,4 Bb.,16 Bb.,16 Ab,16 Bb,4 Bb.,16 Bb.,16 Bb,16 |";
+       // bar 24
+       bassNotes += "C4 C.16 C.16 Bb,16 C4 C.16 C.16 C16";
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+       </div>
+    </div>
+
+    <div class="row" data-bind="visible:section()==='instrument-melody'">
+      <div class="span12" >
+	<form class="form-horizontal">
+	  <div class="control-group">
+	    <div class="controls">
+	      <textarea class="input-xlarge" id="melody-instrument" style="width: 640px; height:200px">
+      var attackMelody = 0.4;
+      var releaseMelody = 0.2;
+	      </textarea>
+	    </div>
+	  </div>
+	</form>
+      </div>
+    </div>
+
+
+    <div class="row" data-bind="visible:section()==='instrument-bass'">
+      <div class="span12" >
+	<form class="form-horizontal">
+	  <div class="control-group">
+	    <div class="controls">
+	      <textarea class="input-xlarge" id="bass-instrument" style="width: 640px; height:200px">
+      var attackBass = 0.2;
+      var releaseBass = 0.1;
+	      </textarea>
+	    </div>
+	  </div>
+	</form>
+      </div>
+    </div>
+</span>
+
+    <!-- end of container -->
+    </div>
+
+  </body>
+</html>

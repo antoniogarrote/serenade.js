@@ -19,7 +19,9 @@ var bassNotes = "...";
 midi.seq_notes('melody', new serenade.NoteSeq(notes), serenade.Synth);
 midi.seq_notes('bass', new serenade.NoteSeq(bassNotes), serenade.Bass);
 
-midi.play(window.updateState);
+midi.play(console.log(track,notation){
+  console.log(track+": played "+notation.verbose());	
+});
 ```
 
 Sequences of notes can be specified programmatically or using the string representation specified in the book for example:

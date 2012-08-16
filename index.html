@@ -102,7 +102,7 @@
 	    <div class="control-group">
 	      <div class="controls">
 		<textarea class="input-xlarge" id="midi" style="width:640px; height:300px">		  
-var bpm = 90;
+var bpm = 85;
 var tempoUnit = 1/4;
 var midi = new serenade.Midi(bpm,tempoUnit);
 
@@ -140,7 +140,7 @@ midi.play(window.updateState);
        // bar 6
        notes += "F''2 R8 F''8 F.''16 Gb.''16 Ab''16 |";
        // bar 7
-       notes += "Bb.''2 Bb.''16 Bb''16 Bb.''16 Ab.''16 Gb''16 |";
+       notes += "Bb''2 R4 Bb.''16 Bb''16 Bb.''16 Ab.''16 Gb''16 |";
        // bar 8
        notes += "Ab.''8 Gb''16 F''2 F''4 |";
        // bar 9
@@ -160,11 +160,11 @@ midi.play(window.updateState);
        // bar 16
        notes += "C'''4 A''2 F''4 |";
        // bar 17
-       notes += "Gb''2 R4 B''4 |";
+       notes += "Gb''2 R4 Bb''4 |";
        // bar 18
        notes += "A''4 F''2 F''4 |";
        // bar 19
-       notes += "Gb''2 R4 B''4 |";
+       notes += "Gb''2 R4 Bb''4 |";
        // bar 20
        notes += "A''4 F''2 D''4 |";
        // bar 21

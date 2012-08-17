@@ -132,7 +132,7 @@ midi.play(window.updateState);
 	    <div class="control-group">
 	      <div class="controls">
 		<textarea class="input-xlarge" id="midi-still-alive" style="width:640px; height:300px">		  
-var bpm = 100;
+var bpm = 90;
 var tempoUnit = 1/4;
 var midi = new serenade.Midi(bpm,tempoUnit);
 
@@ -289,7 +289,7 @@ midi.play(window.updateState);
        // I'm making a note
        notes += "R4 R8 A8 G''8 F#''8 E''8  E''8 |";
        // here HUGE SUCCESS
-       notes += "R8 F#''8 R4 D''4 E''8 A4 |";
+       notes += "R8 F#''8 R4 D''4 E''8 A8 R8 |";
        // It's
        notes += "R8 R4 R4 R8 A4 |";
        // hard to over-state
@@ -305,7 +305,7 @@ midi.play(window.updateState);
        // we do what we must
        notes += "R8 R8 A8 G''8 F#''8 E''8 E''8 |";
        // because we can.
-       notes += "R4 F#''8 D''8 R4 E''8 A4 |";
+       notes += "R4 F#''8 D''8 R4 E''8 A8 R8 |";
        // 
        notes += "R4 R8 R4 R2 |";
        // for the good of all

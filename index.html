@@ -9,6 +9,8 @@
     <script type="text/javascript">
        jQuery(document).ready(function() {
            var viewModel = {
+               availableTunes: ko.observableArray(['zelda','still-alive']),
+               tune:  ko.observable('zelda'),
 	       section: ko.observable('midi'),
 	       playingStatus: ko.observable(''),
 	       midiPlayer: ko.observable(null)
@@ -16,9 +18,9 @@
 	   viewModel.play = function() {
 	       var melodyInst = jQuery("#melody-instrument").val();
 	       var bassInst = jQuery("#bass-instrument").val();
-	       var melodyNotes = jQuery("#melody-notes").val();
-	       var bassNotes = jQuery("#bass-notes").val();
-	       var player = jQuery("#midi").val();
+	       var melodyNotes = (viewModel.tune()==='zelda' ? jQuery("#melody-notes-zelda").val() : jQuery("#melody-notes-still-alive").val());
+	       var bassNotes = (viewModel.tune()==='zelda' ? jQuery("#bass-notes-zelda").val() : jQuery("#bass-notes-still-alive").val());
+	       var player = (viewModel.tune()==='zelda' ? jQuery("#midi-zelda").val() : jQuery("#midi-still-alive").val());
 	       console.log(melodyInst+"\n"+bassInst+"\n"+melodyNotes+"\n"+bassNotes+"\n"+player);
 	       viewModel.playingStatus('');
 	       viewModel.section('playing');
@@ -54,8 +56,13 @@
     <div class="container">
 
       <div class="row" style="margin-top:20px; margin-bottom:30px">
-	<div class="span10">
+	<div class="span7">
 	  <h1><a href="https://github.com/antoniogarrote/serenade.js">serenade.js</a> demo</h1>
+	</div>
+	<div class="span3 control-group">
+	  <div class="controls" style="margin-top:5px" data-bind="visible:section()!=='playing'">
+	    <select data-bind="options: availableTunes, value: tune"></select>
+	  </div>
 	</div>
 	<div class="span2">
 	  <a class="btn btn-success btn-primary btn-large" data-bind="click:play,visible:section()!=='playing'">Play</a>
@@ -96,13 +103,13 @@
 	</li>
       </ul>
 
-      <div class="row" data-bind="visible:section()==='midi'">
+      <div class="row" data-bind="visible:(section()==='midi' && tune()==='zelda')">
 	<div class="span12">
 	  <form class="form-horizontal">
 	    <div class="control-group">
 	      <div class="controls">
-		<textarea class="input-xlarge" id="midi" style="width:640px; height:300px">		  
-var bpm = 85;
+		<textarea class="input-xlarge" id="midi-zelda" style="width:640px; height:300px">		  
+var bpm = 90;
 var tempoUnit = 1/4;
 var midi = new serenade.Midi(bpm,tempoUnit);
 
@@ -119,12 +126,35 @@ midi.play(window.updateState);
 
       </div>
 
-      <div class="row" data-bind="visible:section()==='notes-melody'">
+      <div class="row" data-bind="visible:(section()==='midi' && tune()==='still-alive')">
 	<div class="span12">
 	  <form class="form-horizontal">
 	    <div class="control-group">
 	      <div class="controls">
-		<textarea class="input-xlarge" id="melody-notes" style="width: 640px; height:500px">
+		<textarea class="input-xlarge" id="midi-still-alive" style="width:640px; height:300px">		  
+var bpm = 100;
+var tempoUnit = 1/4;
+var midi = new serenade.Midi(bpm,tempoUnit);
+
+// Still Alive from Portal OST by Jonathan Coulton
+midi.seq_notes('melody', new serenade.NoteSeq(notes), serenade.Synth, attackMelody, releaseMelody);
+midi.seq_notes('bass', new serenade.NoteSeq(bassNotes), serenade.Bass, attackBass, releaseBass);
+
+midi.play(window.updateState);
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+	</div>
+
+      </div>
+
+      <div class="row" data-bind="visible:(section()==='notes-melody' && tune()==='zelda')">
+	<div class="span12">
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" id="melody-notes-zelda" style="width: 640px; height:500px">
        var notes = "";
 
        // bar 1
@@ -140,7 +170,7 @@ midi.play(window.updateState);
        // bar 6
        notes += "F''2 R8 F''8 F.''16 Gb.''16 Ab''16 |";
        // bar 7
-       notes += "Bb''2 R4 Bb.''16 Bb''16 Bb.''16 Ab.''16 Gb''16 |";
+       notes += "Bb.''2 Bb.''16 Bb''16 Bb.''16 Ab.''16 Gb''16 |";
        // bar 8
        notes += "Ab.''8 Gb''16 F''2 F''4 |";
        // bar 9
@@ -160,11 +190,11 @@ midi.play(window.updateState);
        // bar 16
        notes += "C'''4 A''2 F''4 |";
        // bar 17
-       notes += "Gb''2 R4 Bb''4 |";
+       notes += "Gb''2 R4 B''4 |";
        // bar 18
        notes += "A''4 F''2 F''4 |";
        // bar 19
-       notes += "Gb''2 R4 Bb''4 |";
+       notes += "Gb''2 R4 B''4 |";
        // bar 20
        notes += "A''4 F''2 D''4 |";
        // bar 21
@@ -182,12 +212,12 @@ midi.play(window.updateState);
 	</div>
     </div>
 
-    <div class="row" data-bind="visible:section()==='notes-bass'">
+    <div class="row" data-bind="visible:(section()==='notes-bass' && tune()==='zelda')">
        <div class="span12" >
 	  <form class="form-horizontal">
 	    <div class="control-group">
 	      <div class="controls">
-		<textarea class="input-xlarge" id="bass-notes" style="width: 640px; height:500px">
+		<textarea class="input-xlarge" id="bass-notes-zelda" style="width: 640px; height:500px">
        var bassNotes = "";
 
        // bar 1
@@ -236,6 +266,133 @@ midi.play(window.updateState);
        bassNotes += "Bb,4 Bb.,16 Bb.,16 Ab,16 Bb,4 Bb.,16 Bb.,16 Bb,16 |";
        // bar 24
        bassNotes += "C4 C.16 C.16 Bb,16 C4 C.16 C.16 C16";
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+       </div>
+    </div>
+
+
+      <div class="row" data-bind="visible:(section()==='notes-melody' && tune()==='still-alive')">
+	<div class="span12">
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" id="melody-notes-still-alive" style="width: 640px; height:500px">
+       var notes = "";
+
+       // this was a tri
+       notes += "G''8 F#''8 E''8 E''8 |";
+       // umph
+       notes += "F#''8 R8 R4 R2 |";
+       // I'm making a note
+       notes += "R4 R8 A8 G''8 F#''8 E''8  E''8 |";
+       // here HUGE SUCCESS
+       notes += "R8 F#''8 R4 D''4 E''8 A4 |";
+       // It's
+       notes += "R8 R4 R4 R8 A4 |";
+       // hard to over-state
+       notes += "E''4 F#''8 G.''4 E''8 C#''8 |";
+       // my satisfac
+       notes += "R8 D.''4 E''4 A4 |";
+       // tion
+       notes += "R8 F#''4 R8 R2 |";
+       // Aperture Sci
+       notes += "R2 G''8 F#''8 E''8 E''8 |";
+       // ence
+       notes += "F#''8 R8 R4 R2 |";
+       // we do what we must
+       notes += "R8 R8 A8 G''8 F#''8 E''8 E''8 |";
+       // because we can.
+       notes += "R4 F#''8 D''8 R4 E''8 A4 |";
+       // 
+       notes += "R4 R8 R4 R2 |";
+       // for the good of all
+       notes += "E''4 F#''8 G.''4 E''8 C#.''4 |";
+       // of us except the
+       notes += "D''8 E''8 R8 A8 D''8 E''8 |";
+       // ones who are dead. But there's
+       notes += "F''8 E''8 D''8 C''8 R4 A8 Bb8 |";
+       // no sense crying over 
+       notes += "C''4 F''4 E''8 D''8 D''8 C''8 |";
+       // every mistake, you just
+       notes += "D''8 C''8 C''4 C''4 A8 Bb8 |";
+       // keep on trying till you
+       notes += "C''4 F''4 G''8 F''8 E''8 D''8 |";
+       // run out of cake, and the
+       notes += "D''8 E''8 F''8 F''4 G''8 A''8 |";
+       // Science gets done and you
+       notes += "B''8 B''8 A''4 G''4 F''8 F''8 |";
+       // make a neat gun for the
+       notes += "A''8 A''8 G''4 F''4 D''8 C''8 |";
+       // people who are still alive
+       notes += "D''8 F''8 F''8 E''4 E''8 F#''8 F#''8 |";
+       //
+       notes += "F#''4 R4 R2";
+		</textarea>
+	      </div>
+	    </div>
+	  </form>
+	</div>
+    </div>
+
+    <div class="row" data-bind="visible:(section()==='notes-bass' && tune()=='still-alive')">
+       <div class="span12" >
+	  <form class="form-horizontal">
+	    <div class="control-group">
+	      <div class="controls">
+		<textarea class="input-xlarge" id="bass-notes-still-alive" style="width: 640px; height:500px">
+       var bassNotes = "";
+
+       // this was a tri
+       bassNotes += "R2 |";
+       // umph
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // I'm making a note
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // here HUGE SUCCESS
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // It's
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // hard to over-state
+       bassNotes += "B8 E''8 G''8 E''8 B8 E''8 G''8 E''8 |";
+       // my satisfac
+       bassNotes += "A8 C#''8 G''8 C#''8 A8 C#''8 G''8 C#''8 |";
+       // tion
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // Aperture Sci
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // ence
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // we do what we must
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // because we can.
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       //
+       bassNotes += "A8 D''8 F#''8 D''8 B8 D''8 F#''8 D''8 |";
+       // for the good of all
+       bassNotes += "B8 E''8 G''8 E''8 B8 E''8 G''8 E''8 |";
+	// of us except the
+       bassNotes += "A8 C#''8 G''8 C#''8 A8 C#''8 G''8 C#''8 |";
+       // ones who are dead. But there's
+       bassNotes += "Bb8 D''8 F''8 A''8 A''2 |";
+       // no sense crying over
+       bassNotes += "C#'':F#''8 A''8 C#'':F#''4 C#'':E''8 G''8 C#'':E''4 |";
+       // every mistake, you just
+       bassNotes += "Bb:D''8 B''8 Bb:D''8 E''8 C#'':F#''8 A''8 C#'':F''4 |";
+       // keep on trying till you
+       bassNotes += "C'':F''8 A''8 C'':F''4 C'':E''8 G''8 C'':E''4 |";
+       // run out of cake, and the
+       bassNotes += "Bb:D''8 B''8 Bb:D''8 E''8 C'':F''8 A''8 C'':F''4 |";
+       // Science gets done and you
+       bassNotes += "Bb:D''8 G''8 Bb:D''8 G''8 C'':E''8 G''8 C'':E''8 G''8 |";
+       // make a neat gun for the
+       bassNotes += "C'':F''8 A''8 C'':F''8 A''8 D'':F''8 A''8 D'':F''8 D'':F'':A''8 |";
+       // people who are still alive
+       bassNotes += "Bb16 D''16 G''8 Bb:D''8 Bb:D'':G''8 A:C#''8 G''8 A:C''8 G''8 |";
+       //
+       bassNotes += "D D.:A.:D.'':F.''4 D'':G''8 D'':F''8 A:D''8" 
 		</textarea>
 	      </div>
 	    </div>
